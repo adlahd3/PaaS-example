@@ -1,0 +1,27 @@
+meta {
+  name: invoke a function
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/api/v1/functions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "hello-world-bruno-2",
+    "code": "module.exports = async (req) => ({ message: \"hello\" })"
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

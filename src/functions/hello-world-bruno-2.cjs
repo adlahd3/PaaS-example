@@ -1,0 +1,1 @@
+module.exports = async (req) => ({ message: "hello" })
