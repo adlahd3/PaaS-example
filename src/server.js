@@ -23,14 +23,6 @@ server.post('/api/v1/functions', (req, res) => {
   res.send({ id, url: `/fn/${name}` });
 });
 
-/* Function metadata
-server.get('/api/v1/functions/:name', (req, res) => {
-  const func = getFuncByName(req.params.name);
-  if (!func) return res.code(404).send({ error: 'Function not found' });
-  res.send(func);
-});
-*/
-
 // Invoke a function (GET + POST)
 const invokeHandler = async (req, res) => {
   const { name } = req.params;
