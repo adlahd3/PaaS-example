@@ -1,0 +1,132 @@
+openapi: 3.0.3
+info:
+  title: PaSS API
+  description: Platform as a Simple Service — minimal serverless function platform
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/v1/functions:
+    post:
+      summary: Deploy a function
+      operationId: createFunction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - code
+              properties:
+                name:
+                  type: string
+                  description: Unique function name (used as the invocation URL slug)
+                  example: hello-world
+                code:
+                  type: string
+                  description: CommonJS function source code (must use module.exports)
+                  example: 'module.exports = async (req) => ({ message: "hello" })'
+      responses:
+        '200':
+          description: Function deployed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  url:
+                    type: string
+                    example: /fn/hello-world
+
+  /fn/{name}:
+    get:
+      summary: Invoke a function
+      operationId: invokeGet
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Function name
+      responses:
+        '200':
+          description: Function executed successfully
+          content:
+            application/json:
+              schema: {}
+        '408':
+          description: Function timed out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Function execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Invoke a function with a request body
+      operationId: invokePost
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Function name
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+      responses:
+        '200':
+          description: Function executed successfully
+          content:
+            application/json:
+              schema: {}
+        '408':
+          description: Function timed out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Function execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
